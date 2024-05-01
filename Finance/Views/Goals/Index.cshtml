@@ -1,0 +1,10 @@
+﻿@foreach (var goal in Model.FinancialGoals)
+{
+    <p>@goal.Name - @goal.Amount</p>
+}
+
+<!-- Exibição de Wishes -->
+@foreach (var wish in Model.Wishes)
+{
+    <p>@wish.Name</p>
+}
