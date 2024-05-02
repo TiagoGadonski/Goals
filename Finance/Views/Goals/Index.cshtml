@@ -1,10 +1,20 @@
 ﻿@foreach (var goal in Model.FinancialGoals)
 {
-    <p>@goal.Name - @goal.Amount</p>
+    <div class="card">
+        <p class="card-title">@goal.Name</p>
+    <p> - @goal.Amount - @goal.EstimatedCompletion - @goal.Status</p>
+
+    </div>
 }
 
 <!-- Exibição de Wishes -->
 @foreach (var wish in Model.Wishes)
 {
-    <p>@wish.Name</p>
+    <div class="card">
+        <p class="card-title">@wish.Name</p>
+    <p>@wish.Status</p>
+
+    </div>
 }
+
+<button type="button" class="btn btn-danger">Left</button>
