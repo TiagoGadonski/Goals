@@ -1,20 +1,127 @@
-﻿@foreach (var goal in Model.FinancialGoals)
-{
-    <div class="card">
-        <p class="card-title">@goal.Name</p>
-    <p> - @goal.Amount - @goal.EstimatedCompletion - @goal.Status</p>
+﻿@* Estilos personalizados *@
+<style>
+    .card-container {
+        margin-bottom: 20px; /* Espaço entre os cartões */
+    }
 
+    .card-header, .card-footer {
+        background: linear-gradient(45deg, #6a0dad, #a959d9); /* Gradiente roxo */
+        color: #ffffff; /* Texto branco para contraste */
+        padding: 10px 15px; /* Padding para espaçamento interno */
+    }
+
+    .card-body {
+        background-color: #f8f8f9; /* Fundo claro para o corpo do cartão */
+        padding: 15px; /* Padding para corpo do cartão */
+    }
+
+    .card {
+        border-radius: 8px; 
+        border: none;
+        box-shadow: 0 4px 12px rgba(106, 13, 173, 0.2); 
+        transition: transform 0.3s ease-in-out; 
+    }
+
+        .card:hover {
+            transform: scale(1.03); 
+        }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .footer-content p {
+            margin: 0; 
+        }
+</style>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#chooseTypeModal">
+    +
+</button>
+
+<div class="modal fade" id="chooseTypeModal" tabindex="-1" role="dialog" aria-labelledby="chooseTypeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chooseTypeModalLabel">Escolha o Tipo de Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <button type="button" class="btn btn-secondary" onclick="openDetailsModal('wish')">Adicionar Wish</button>
+        <button type="button" class="btn btn-secondary" onclick="openDetailsModal('financial')">Adicionar Financial Goal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Detalhes do Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="detailsForm" method="post">
+                <div class="modal-body">
+                    <!-- Os campos serão inseridos aqui dinamicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row align-items-start">
+
+@foreach (var goal in Model.FinancialGoals)
+{
+    <div class="card card-container col">
+        <div class="card-header text-center">@goal.Name</div>
+        <div class="card-body">
+            <p class="text-center">Valor: @goal.Amount.ToString("C")</p> <!-- Formatação como valor monetário -->
+        </div>
+        <div class="card-footer">
+            <div class="footer-content">
+                <p>Previsão: @goal.EstimatedCompletion.ToString("dd MMM yyyy")</p>
+                <p>Status: @goal.Status</p>
+            </div>
+        </div>
     </div>
 }
+</div>
 
-<!-- Exibição de Wishes -->
 @foreach (var wish in Model.Wishes)
 {
-    <div class="card">
-        <p class="card-title">@wish.Name</p>
-    <p>@wish.Status</p>
-
+    <div class="card card-container">
+        <div class="card-header">@wish.Name</div>
+        <div class="card-body">
+            <p>Status: @wish.Status</p>
+        </div>
     </div>
 }
 
-<button type="button" class="btn btn-danger">Left</button>
+
+<script>
+    function openDetailsModal(type) {
+        // Define os campos do formulário com base no tipo
+        let formHtml = '';
+        if (type === 'wish') {
+            formHtml = '<input type="text" class="form-control" name="name" placeholder="Nome do Wish" required>';
+            $('#detailsForm').attr('action', '/Home/SaveWish');
+        } else if (type === 'financial') {
+            formHtml = '<input type="number" class="form-control" name="amount" placeholder="Valor do Financial Goal" required>';
+            $('#detailsForm').attr('action', '/Home/SaveFinancialGoal');
+        }
+
+        $('.modal-body').html(formHtml);
+        $('#chooseTypeModal').modal('hide');
+        $('#detailsModal').modal('show');
+    }
+</script>

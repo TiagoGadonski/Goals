@@ -1,7 +1,7 @@
 ﻿using Finance.Data;
+using Finance.Models;
 using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Controllers
 {
@@ -22,6 +22,19 @@ namespace Finance.Controllers
             };
 
             return View(viewModel);
+        }
+
+        public IActionResult SaveWish(Wish model)
+        {
+            // Lógica para salvar o Wish
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult SaveFinancialGoal(FinancialGoal model)
+        {
+            // Lógica para salvar o Financial Goal
+            return RedirectToAction("Index");
         }
     }
 }
