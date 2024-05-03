@@ -1,0 +1,93 @@
+﻿@model Finance.ViewModels.TransactionViewModel
+
+@{
+    ViewData["Title"] = "Financial Overview";
+}
+
+<!-- Botão para abrir o modal de adicionar receita -->
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#addIncomeModal">
+    Adicionar Receita
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="addIncomeModal" tabindex="-1" role="dialog" aria-labelledby="addIncomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addIncomeModalLabel">Nova Receita</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-controller="Transaction" asp-action="AddTransaction" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="Type" value="Income" />
+                    <div class="form-group">
+                        <label for="description">Descrição</label>
+                        <input type="text" class="form-control" id="description" name="Description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="value">Valor</label>
+                        <input type="number" class="form-control" id="value" name="Value" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Data</label>
+                        <input type="date" class="form-control" id="date" name="Date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Categoria</label>
+                        <select class="form-control" id="category" name="CategoryId" required>
+                            @foreach (var category in Model.Categories.Where(c => c.Type == TransactionType.Income))
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Incomes</h3>
+            @foreach (var transaction in Model.Transactions.Where(t => t.Type == TransactionType.Income))
+            {
+                <p>@transaction.Description - @transaction.Value.ToString("C") (@transaction.Date.ToShortDateString())</p>
+            }
+        </div>
+        <div class="col-md-6">
+            <h3>Expenses</h3>
+            @foreach (var transaction in Model.Transactions.Where(t => t.Type == TransactionType.Expense))
+            {
+                <p>@transaction.Description - @transaction.Value.ToString("C") (@transaction.Date.ToShortDateString())</p>
+            }
+        </div>
+    </div>
+    <canvas id="financeChart"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('financeChart').getContext('2d');
+        var financeChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Model.Categories.Select(c => c.Name).ToArray(),
+                datasets: [{
+                    label: 'Value by Category',
+                    data: Model.Categories.Select(c => Model.Transactions.Where(t => t.CategoryId == c.Id).Sum(t => t.Value)).ToArray(),
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                }]
+            }
+        });
+    </script>
+}

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<TaskItem>
+<style>
+    .kanban-column {
+    float: left;
+    width: 25%; /* or less, depending on how many columns you have */
+    padding: 0 10px;
+}
+
+.kanban-column .card-body {
+    min-height: 200px;
+}
+</style>
+<div class="container">
+    <h1>Task</h1>
+    @foreach (var column in Model.Select(t => t.Column).Distinct().OrderBy(c => c.Id))
+    {
+        <div class="card kanban-column">
+            <div class="card-header">
+                <h4>@column.Title</h4>
+            </div>
+            <div class="card-body">
+                @foreach (var task in Model.Where(t => t.ColumnId == column.Id))
+                {
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">@task.Title</h5>
+                            <p class="card-text">@task.Description</p>
+                            <p class="card-text"><small class="text-muted">@task.Date.ToString("d")</small></p>
+                            <a href="@Url.Action("Edit", "Tasks", new { id = task.Id })" class="btn btn-primary">Edit</a>
+                            <a href="@Url.Action("Delete", "Tasks", new { id = task.Id })" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
