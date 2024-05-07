@@ -89,7 +89,13 @@
         </div>
         <div class="card-footer">
             <div class="footer-content">
-                <p>Previsão: @goal.EstimatedCompletion.ToString("dd MMM yyyy")</p>
+                    @if (goal.EstimatedCompletion != null)
+                    {
+                        <p>Previsão: 
+                        @goal.EstimatedCompletion.ToString("dd MMM yyyy")
+                    </p>
+                        
+                    }
                 <p>Status: @goal.Status</p>
             </div>
         </div>
