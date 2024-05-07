@@ -34,7 +34,7 @@
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <!-- Reduzir o tamanho do logo -->
-                    <img src="~/images/logo white.png" alt="Logo" style="height: 40px;">
+                    <img src="~/images/logo white.png" alt="Logo" style="height: 60px;">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Goals" asp-action="Index">Goals</a>
                         </li>
+                    </ul>
+                </div>
+
+                <div class="navbar">
+                    <ul>
+                        <li><a href="@Url.Action("Index", "Blog")">Blog</a></li>
+                        <li><a href="@Url.Action("Index", "FinancialGoal")">Financial Goal</a></li>
+                        <li><a href="@Url.Action("Index", "TaskItem")">Task Item</a></li>
+                        <li><a href="@Url.Action("Index", "TextEditor")">Text Editor</a></li>
+                        <li><a href="@Url.Action("Index", "Transaction")">Transaction</a></li>
+                        <li><a href="@Url.Action("Index", "Wish")">Wish</a></li>
                     </ul>
                 </div>
             </div>
