@@ -6,6 +6,7 @@ import { FinancesComponent } from './finances/finances.component';
 import { GoalsComponent } from './goals/goals.component';
 import { NotesComponent } from './notes/notes.component';
 import { HomeComponent } from './home/home.component';
+import { CryptoComponent } from './crypto/crypto.component';
 
 export const routes: Routes = [
   {
@@ -36,5 +37,9 @@ export const routes: Routes = [
     path: 'home',
     component: HomeComponent
   },
+  {
+    path: 'crypto',
+    component: CryptoComponent
+  }
 
 ];
