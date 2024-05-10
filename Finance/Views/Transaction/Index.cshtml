@@ -1,93 +1,98 @@
-﻿@model Finance.ViewModels.TransactionViewModel
+﻿@using Finance.Models
+@model Finance.ViewModels.TransactionViewModel
 
 @{
-    ViewData["Title"] = "Financial Overview";
+    ViewData["Title"] = "Transactions";
 }
 
-<!-- Botão para abrir o modal de adicionar receita -->
-<button type="button" class="btn btn-success" data-toggle="modal" data-target="#addIncomeModal">
-    Adicionar Receita
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="addIncomeModal" tabindex="-1" role="dialog" aria-labelledby="addIncomeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addIncomeModalLabel">Nova Receita</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form asp-controller="Transaction" asp-action="AddTransaction" method="post">
-                <div class="modal-body">
-                    <input type="hidden" name="Type" value="Income" />
-                    <div class="form-group">
-                        <label for="description">Descrição</label>
-                        <input type="text" class="form-control" id="description" name="Description" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="value">Valor</label>
-                        <input type="number" class="form-control" id="value" name="Value" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="date">Data</label>
-                        <input type="date" class="form-control" id="date" name="Date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="category">Categoria</label>
-                        <select class="form-control" id="category" name="CategoryId" required>
-                            @foreach (var category in Model.Categories.Where(c => c.Type == TransactionType.Income))
-                            {
-                                <option value="@category.Id">@category.Name</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
+<h2>Transactions</h2>
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6">
             <h3>Incomes</h3>
-            @foreach (var transaction in Model.Transactions.Where(t => t.Type == TransactionType.Income))
-            {
-                <p>@transaction.Description - @transaction.Value.ToString("C") (@transaction.Date.ToShortDateString())</p>
-            }
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Value</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Transactions.Where(t => t.Type == TransactionType.Income))
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td>@item.Value.ToString("C")</td>
+                            <td>@item.Date.ToShortDateString()</td>
+                            <td>@item.Category.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
         <div class="col-md-6">
             <h3>Expenses</h3>
-            @foreach (var transaction in Model.Transactions.Where(t => t.Type == TransactionType.Expense))
-            {
-                <p>@transaction.Description - @transaction.Value.ToString("C") (@transaction.Date.ToShortDateString())</p>
-            }
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Value</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Transactions.Where(t => t.Type == TransactionType.Expense))
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td>@item.Value.ToString("C")</td>
+                            <td>@item.Date.ToShortDateString()</td>
+                            <td>@item.Category.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
-    <canvas id="financeChart"></canvas>
-</div>
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        var ctx = document.getElementById('financeChart').getContext('2d');
-        var financeChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Model.Categories.Select(c => c.Name).ToArray(),
-                datasets: [{
-                    label: 'Value by Category',
-                    data: Model.Categories.Select(c => Model.Transactions.Where(t => t.CategoryId == c.Id).Sum(t => t.Value)).ToArray(),
-                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
-                }]
-            }
-        });
-    </script>
-}
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Add Transaction</h3>
+            <form asp-action="PostTransaction" method="post">
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <input type="text" class="form-control" id="description" name="Description" required>
+                </div>
+                <div class="mb-3">
+                    <label for="value" class="form-label">Value</label>
+                    <input type="number" class="form-control" id="value" name="Value" required step="0.01">
+                </div>
+                <div class="mb-3">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="date" name="Date" required>
+                </div>
+                <div class="mb-3">
+                    <label for="type" class="form-label">Type</label>
+                    <select class="form-control" id="type" name="Type">
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-control" id="category" name="CategoryId">
+                        @foreach (var category in Model.CategoryOptions)  // Make sure this matches ViewModel
+                        {
+                            <option value="@category.Value">@category.Text</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Transaction</button>
+            </form>
+        </div>
+    </div>
+</div>

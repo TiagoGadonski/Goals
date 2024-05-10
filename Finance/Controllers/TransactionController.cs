@@ -2,6 +2,7 @@
 using Finance.Models;
 using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Controllers
@@ -12,32 +13,107 @@ namespace Finance.Controllers
         {
             private readonly FinanceContext _context;
 
-            public TransactionController(FinanceContext context)  // Correct the constructor name
+            public TransactionController(FinanceContext context)
             {
                 _context = context;
             }
 
-            public IActionResult Index()
+            public async Task<IActionResult> Index()
             {
+                var transactions = await _context.Transactions.Include(t => t.Category).ToListAsync();
+                var categoryOptions = await _context.TransactionCategories
+                    .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                    .ToListAsync();
+
                 var viewModel = new TransactionViewModel
                 {
-                    Transactions = _context.Transactions.Include(t => t.Category).ToList(),
-                    Categories = _context.TransactionCategories.ToList()
+                    Transactions = transactions,
+                    CategoryOptions = categoryOptions
                 };
 
                 return View(viewModel);
             }
 
-            [HttpPost]
-            public async Task<IActionResult> AddTransaction(Transaction transaction)
+            // GET: api/Transactions
+            [HttpGet]
+            public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
             {
-                if (ModelState.IsValid)
+                return await _context.Transactions.Include(t => t.Category).ToListAsync();
+            }
+
+            // GET: api/Transactions/5
+            [HttpGet("{id}")]
+            public async Task<ActionResult<Transaction>> GetTransaction(int id)
+            {
+                var transaction = await _context.Transactions.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == id);
+
+                if (transaction == null)
                 {
-                    _context.Transactions.Add(transaction);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return NotFound();
                 }
-                return View(transaction);
+
+                return transaction;
+            }
+
+            // POST: api/Transactions
+            [HttpPost]
+            public async Task<ActionResult<Transaction>> PostTransaction(Transaction transaction)
+            {
+                _context.Transactions.Add(transaction);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
+            }
+
+            // PUT: api/Transactions/5
+            [HttpPut("{id}")]
+            public async Task<IActionResult> PutTransaction(int id, Transaction transaction)
+            {
+                if (id != transaction.Id)
+                {
+                    return BadRequest();
+                }
+
+                _context.Entry(transaction).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!TransactionExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
+            }
+
+            // DELETE: api/Transactions/5
+            [HttpDelete("{id}")]
+            public async Task<IActionResult> DeleteTransaction(int id)
+            {
+                var transaction = await _context.Transactions.FindAsync(id);
+                if (transaction == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Transactions.Remove(transaction);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+            private bool TransactionExists(int id)
+            {
+                return _context.Transactions.Any(e => e.Id == id);
             }
         }
     }
