@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Finance.Data;
-using System.Configuration;
+﻿using Finance.Data;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<FinanceContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("FinanceContext") ?? throw new InvalidOperationException("Connection string 'FinanceContext' not found.")));
@@ -11,6 +11,15 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<FinanceContext>();
 
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { "pt-BR" };
+    var cultureInfo = new CultureInfo("pt-BR");
+
+    options.DefaultRequestCulture = new RequestCulture(cultureInfo);
+    options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+});
 
 
 var app = builder.Build();
@@ -29,6 +38,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseRequestLocalization();
 
 app.MapControllerRoute(
     name: "default",

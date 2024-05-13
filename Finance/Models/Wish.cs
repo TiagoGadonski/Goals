@@ -9,6 +9,7 @@ namespace Finance.Models
         public string Name { get; set; } // Nome do desejo
         public string Status { get; set; } // Status do desejo (ex: Pending, Fulfilled)
         public DateTime CreationDate { get; set; } // Data de criação do desejo
+        public bool IsCompleted { get; set; }
 
         public Wish()
         {

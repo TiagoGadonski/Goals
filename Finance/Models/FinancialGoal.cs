@@ -11,15 +11,18 @@ namespace Finance.Models
         public DateTime CreatedOn { get; set; } // Data de criação da meta
         public DateTime? EstimatedCompletion { get; set; } // Previsão de término (opcional)
         public string Status { get; set; } // Status da meta (ex: Active, Completed, Cancelled)
-
+        public string Parcelas { get; set; }
+        public string ParcelaAtual { get; set; }
+        public bool Check { get; set; }
+        public string Description { get; set; }
         public FinancialGoal()
         {
             // Inicialização de valores padrão
-            Amount = 0m;
+            Amount = 0;
             Name = "Nova Meta Financeira";
             CreatedOn = DateTime.Now;
-            EstimatedCompletion = null; // sem data de término definida
-            Status = "Active"; // assumindo que a meta é ativada por padrão
+            EstimatedCompletion = null;
+            Status = "Active";
         }
     }
 }
