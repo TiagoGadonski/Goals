@@ -1,0 +1,65 @@
+<div class="container p-5">
+    <div class="row">
+      <div class="col-md-6 border border-light rounded p-5 shadow">
+        <h4>{{ tituloFormulario }}</h4>
+        <form [formGroup]="formulario" (ngSubmit)="enviarFormulario()">
+          
+          <div class="form-group">
+            <label for="name">Nome da Meta</label>
+            <input type="text" id="name" class="form-control form-control-sm" formControlName="name">
+          </div>
+  
+          <div class="form-group">
+            <label for="amount">Valor</label>
+            <input type="number" id="amount" class="form-control form-control-sm" formControlName="amount">
+          </div>
+  
+          <div class="form-group">
+            <label for="createdOn">Data de Criação</label>
+            <input type="date" id="createdOn" class="form-control form-control-sm" formControlImpact="createdOn">
+          </div>
+  
+          <div class="form-group">
+            <label for="estimatedCompletion">Previsão de Término</label>
+            <input type="date" id="estimatedCompletion" class="form-control form-control-sm" formControlName="estimatedCompletion">
+          </div>
+  
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" class="form-control form-control-sm" formControlName="status">
+              <option value="Active">Ativo</option>
+              <option value="Completed">Concluído</option>
+              <option value="Cancelled">Cancelado</option>
+            </select>
+          </div>
+  
+          <div class="form-group">
+            <label for="parcelas">Parcelas</label>
+            <input type="text" id="parcelas" class="form-control form-control-sm" formControlName="parcelas">
+          </div>
+  
+          <div class="form-group">
+            <label for="parcelaAtual">Parcela Atual</label>
+            <input type="text" id="parcelaAtual" class="form-control form-control-sm" formControlName="parcelaAtual">
+          </div>
+  
+          <div class="form-group">
+            <label for="check">Confirmado</label>
+            <input type="checkbox" id="check" class="form-check-input" formControlName="check">
+          </div>
+  
+          <div class="form-group">
+            <label for="description">Descrição</label>
+            <textarea id="description" class="form-control form-control-sm" formControlName="description"></textarea>
+          </div>
+  
+          <div class="btn-group mt-3">
+            <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+        
+          </div>
+  
+        </form>
+      </div>
+    </div>
+  </div>
+  

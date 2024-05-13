@@ -1,18 +1,18 @@
 import { Component, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';  // Importe o RouterModule
+
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
-import { HttpClientModule } from '@angular/common/http';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { FooterComponent } from './footer/footer.component';
-import { WisdomComponent } from './wisdom/wisdom.component';
-import { DailyQuoteComponent } from './daily-quote/daily-quote.component';
-import { CryptoInfoComponent } from './crypto-info/crypto-info.component';
-import { StockInfoComponent } from './stock-info/stock-info.component';
+
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { FooterComponent } from './components/footer/footer.component';
+
 import { isPlatformBrowser } from '@angular/common';
 import * as feather from 'feather-icons';
 
@@ -20,25 +20,17 @@ import * as feather from 'feather-icons';
   selector: 'app-root',
   standalone: true,
   imports: [
-    // Angular modules
-    RouterOutlet,
+    CommonModule, // For common directives like NgIf, NgFor
     HttpClientModule,
-
-    // Angular Material modules
+    RouterModule, // Import RouterModule to use RouterOutlet
     MatSlideToggleModule,
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatListModule,
-
-    // Custom components
-    SidebarComponent,
-    FooterComponent,
-    WisdomComponent,
-    DailyQuoteComponent,
-    CryptoInfoComponent,
-    StockInfoComponent,
+    SidebarComponent, // Ensure SidebarComponent is standalone or part of another imported NgModule
+    FooterComponent  // Ensure FooterComponent is standalone or part of another imported NgModule
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
@@ -50,7 +42,7 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      feather.replace();  // Initialize Feather icons once the platform is confirmed to be a browser
+      feather.replace(); // Initialize Feather icons once the platform is confirmed to be a browser
     }
   }
 }
