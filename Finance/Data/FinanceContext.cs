@@ -18,5 +18,6 @@ namespace Finance.Data
         public DbSet<Column> Columns { get; set; }
         public DbSet<Category> Categories { get; set; }
 
+
     }
 }
