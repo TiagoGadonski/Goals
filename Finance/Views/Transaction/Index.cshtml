@@ -26,7 +26,7 @@
                         <tr>
                             <td>@item.Description</td>
                             <td>@item.Value.ToString("C")</td>
-                            <td>@item.Date.ToShortDateString()</td>
+                            <td>@item.Day</td>
                             <td>@item.Category.Name</td>
                         </tr>
                     }
@@ -50,7 +50,7 @@
                         <tr>
                             <td>@item.Description</td>
                             <td>@item.Value.ToString("C")</td>
-                            <td>@item.Date.ToShortDateString()</td>
+                            <td>@item.Day</td>
                             <td>@item.Category.Name</td>
                         </tr>
                     }
@@ -65,15 +65,15 @@
             <form asp-action="PostTransaction" method="post">
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <input type="text" class="form-control" id="description" name="Description" required>
+                    <input type="text" class="form-control" id="description" name="Description" >
                 </div>
                 <div class="mb-3">
                     <label for="value" class="form-label">Value</label>
-                    <input type="number" class="form-control" id="value" name="Value" required step="0.01">
+                    <input type="number" class="form-control" id="value" name="Value"  step="0.01">
                 </div>
                 <div class="mb-3">
-                    <label for="date" class="form-label">Date</label>
-                    <input type="date" class="form-control" id="date" name="Date" required>
+                    <label for="day" class="form-label">Date</label>
+                    <input type="text" class="form-control" id="day" name="Day">
                 </div>
                 <div class="mb-3">
                     <label for="type" class="form-label">Type</label>

@@ -1,7 +1,6 @@
 import { Component, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';  // Importe o RouterModule
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -13,27 +12,30 @@ import { MatListModule } from '@angular/material/list';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { FooterComponent } from './components/footer/footer.component';
 
-import { isPlatformBrowser } from '@angular/common';
 import * as feather from 'feather-icons';
+
+import { FinancialGoalsService } from './services/financial-goal.service'; // Importe o serviço
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule, // For common directives like NgIf, NgFor
-    HttpClientModule,
-    RouterModule, // Import RouterModule to use RouterOutlet
+    CommonModule,
+    RouterModule,
     MatSlideToggleModule,
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     MatListModule,
-    SidebarComponent, // Ensure SidebarComponent is standalone or part of another imported NgModule
-    FooterComponent  // Ensure FooterComponent is standalone or part of another imported NgModule
+    SidebarComponent,
+    FooterComponent
   ],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers: [
+    FinancialGoalsService // Registra o serviço como provedor
+  ]
 })
 export class AppComponent implements AfterViewInit {
   title = 'ClientApp';
@@ -42,7 +44,7 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      feather.replace(); // Initialize Feather icons once the platform is confirmed to be a browser
+      feather.replace();
     }
   }
 }

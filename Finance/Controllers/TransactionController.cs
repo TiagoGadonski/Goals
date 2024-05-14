@@ -59,8 +59,22 @@ namespace Finance.Controllers
             [HttpPost]
             public async Task<ActionResult<Transaction>> PostTransaction(Transaction transaction)
             {
+                if (transaction == null || string.IsNullOrEmpty(transaction.Day))
+                {
+                    ModelState.AddModelError("Day", "The Date field is required.");
+                    return BadRequest(ModelState);
+                }
+
                 _context.Transactions.Add(transaction);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Handle exception or log it
+                    return StatusCode(500, "A database error occurred.");
+                }
 
                 return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
             }

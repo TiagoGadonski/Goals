@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { FinancialGoalsService } from '../../services/financial-goal.service';
+import { FinancialGoalsService } from '../../services/financial-goal.service'; // Certifique-se de que o caminho está correto
 import { FinancialGoal } from '../../ts/FinancialGoal';
 import { CommonModule } from '@angular/common';
 
