@@ -1,5 +1,4 @@
-﻿@using Finance.Models
-@model Finance.ViewModels.TransactionViewModel
+﻿@model Finance.ViewModels.TransactionViewModel
 
 @{
     ViewData["Title"] = "Transactions";
@@ -17,17 +16,20 @@
                         <th>Description</th>
                         <th>Value</th>
                         <th>Date</th>
-                        <th>Category</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Transactions.Where(t => t.Type == TransactionType.Income))
+                    @foreach (var income in Model.Incomes)
                     {
                         <tr>
-                            <td>@item.Description</td>
-                            <td>@item.Value.ToString("C")</td>
-                            <td>@item.Day</td>
-                            <td>@item.Category.Name</td>
+                            <td>@income.Description</td>
+                            <td>@income.Value.ToString("C")</td>
+                            <td>@income.Day</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@income.Id" class="btn btn-sm btn-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@income.Id" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -41,17 +43,20 @@
                         <th>Description</th>
                         <th>Value</th>
                         <th>Date</th>
-                        <th>Category</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Transactions.Where(t => t.Type == TransactionType.Expense))
+                    @foreach (var expense in Model.Expenses)
                     {
                         <tr>
-                            <td>@item.Description</td>
-                            <td>@item.Value.ToString("C")</td>
-                            <td>@item.Day</td>
-                            <td>@item.Category.Name</td>
+                            <td>@expense.Description</td>
+                            <td>@expense.Value.ToString("C")</td>
+                            <td>@expense.Day</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@expense.Id" class="btn btn-sm btn-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@expense.Id" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -62,33 +67,24 @@
     <div class="row mt-4">
         <div class="col-md-12">
             <h3>Add Transaction</h3>
-            <form asp-action="PostTransaction" method="post">
+            <form asp-action="CreateTransaction" method="post">
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <input type="text" class="form-control" id="description" name="Description" >
+                    <input type="text" class="form-control" id="description" name="Description">
                 </div>
                 <div class="mb-3">
                     <label for="value" class="form-label">Value</label>
-                    <input type="number" class="form-control" id="value" name="Value"  step="0.01">
+                    <input type="number" class="form-control" id="value" name="Value" step="0.01">
                 </div>
                 <div class="mb-3">
                     <label for="day" class="form-label">Date</label>
-                    <input type="text" class="form-control" id="day" name="Day">
+                    <input type="string" class="form-control" id="day" name="Day">
                 </div>
                 <div class="mb-3">
                     <label for="type" class="form-label">Type</label>
                     <select class="form-control" id="type" name="Type">
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category</label>
-                    <select class="form-control" id="category" name="CategoryId">
-                        @foreach (var category in Model.CategoryOptions)  // Make sure this matches ViewModel
-                        {
-                            <option value="@category.Value">@category.Text</option>
-                        }
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Add Transaction</button>

@@ -2,101 +2,83 @@
 using Finance.Models;
 using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Controllers
 {
-    namespace Finance.Controllers
+    public class TransactionController : Controller
     {
-        public class TransactionController : Controller  // Ensure the class name ends with 'Controller'
+        private readonly FinanceContext _context;
+
+        public TransactionController(FinanceContext context)
         {
-            private readonly FinanceContext _context;
+            _context = context;
+        }
 
-            public TransactionController(FinanceContext context)
+        public async Task<IActionResult> Index()
+        {
+            var transactions = await _context.Transactions.ToListAsync();
+            var incomes = transactions.Where(t => t.Type == TransactionType.Income).ToList();
+            var expenses = transactions.Where(t => t.Type == TransactionType.Expense).ToList();
+
+            var viewModel = new TransactionViewModel
             {
-                _context = context;
+                Incomes = incomes,
+                Expenses = expenses
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTransaction(Transaction transaction)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(transaction);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
 
-            public async Task<IActionResult> Index()
+            return View(transaction);
+        }
+
+        // GET: Transactions/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
             {
-                var transactions = await _context.Transactions.Include(t => t.Category).ToListAsync();
-                var categoryOptions = await _context.TransactionCategories
-                    .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
-                    .ToListAsync();
-
-                var viewModel = new TransactionViewModel
-                {
-                    Transactions = transactions,
-                    CategoryOptions = categoryOptions
-                };
-
-                return View(viewModel);
+                return NotFound();
             }
 
-            // GET: api/Transactions
-            [HttpGet]
-            public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
+            var transaction = await _context.Transactions.FindAsync(id);
+            if (transaction == null)
             {
-                return await _context.Transactions.Include(t => t.Category).ToListAsync();
+                return NotFound();
+            }
+            return View(transaction);
+        }
+
+        // POST: Transactions/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Value,Day,Type")] Transaction transaction)
+        {
+            if (id != transaction.Id)
+            {
+                return NotFound();
             }
 
-            // GET: api/Transactions/5
-            [HttpGet("{id}")]
-            public async Task<ActionResult<Transaction>> GetTransaction(int id)
+            if (ModelState.IsValid)
             {
-                var transaction = await _context.Transactions.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == id);
-
-                if (transaction == null)
-                {
-                    return NotFound();
-                }
-
-                return transaction;
-            }
-
-            // POST: api/Transactions
-            [HttpPost]
-            public async Task<ActionResult<Transaction>> PostTransaction(Transaction transaction)
-            {
-                if (transaction == null || string.IsNullOrEmpty(transaction.Day))
-                {
-                    ModelState.AddModelError("Day", "The Date field is required.");
-                    return BadRequest(ModelState);
-                }
-
-                _context.Transactions.Add(transaction);
                 try
                 {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateException ex)
-                {
-                    // Handle exception or log it
-                    return StatusCode(500, "A database error occurred.");
-                }
-
-                return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
-            }
-
-            // PUT: api/Transactions/5
-            [HttpPut("{id}")]
-            public async Task<IActionResult> PutTransaction(int id, Transaction transaction)
-            {
-                if (id != transaction.Id)
-                {
-                    return BadRequest();
-                }
-
-                _context.Entry(transaction).State = EntityState.Modified;
-
-                try
-                {
+                    _context.Update(transaction);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TransactionExists(id))
+                    if (!TransactionExists(transaction.Id))
                     {
                         return NotFound();
                     }
@@ -105,31 +87,71 @@ namespace Finance.Controllers
                         throw;
                     }
                 }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(transaction);
+        }
 
-                return NoContent();
+        // GET: Transactions/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
             }
 
-            // DELETE: api/Transactions/5
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> DeleteTransaction(int id)
+            var transaction = await _context.Transactions
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (transaction == null)
             {
-                var transaction = await _context.Transactions.FindAsync(id);
-                if (transaction == null)
-                {
-                    return NotFound();
-                }
+                return NotFound();
+            }
 
-                _context.Transactions.Remove(transaction);
+            return View(transaction);
+        }
+
+        // POST: Transactions/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var transaction = await _context.Transactions.FindAsync(id);
+            _context.Transactions.Remove(transaction);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool TransactionExists(int id)
+        {
+            return _context.Transactions.Any(e => e.Id == id);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateFinancialGoal(FinancialGoal financialGoal)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(financialGoal);
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                if (financialGoal.Status == "Paying")
+                {
+                    var expense = new Transaction
+                    {
+                        Description = financialGoal.Name,
+                        Value = financialGoal.Amount,
+                        Day = DateTime.Now.ToString("yyyy-MM-dd"),
+                        Type = TransactionType.Expense
+                    };
+
+                    _context.Transactions.Add(expense);
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction(nameof(Index));
             }
 
-            private bool TransactionExists(int id)
-            {
-                return _context.Transactions.Any(e => e.Id == id);
-            }
+            return View(financialGoal);
         }
     }
-
 }
