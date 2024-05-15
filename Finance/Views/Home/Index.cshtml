@@ -125,6 +125,27 @@
             </div>
         </div>
     </div>
+
+    <div class="card">
+        
+            <div class="card-header">
+                <h1>
+                    Planejamento de Compra
+                </h1>
+            </div>
+
+            <div class="card-body">
+                @foreach (var wish in Model.Wishes)
+                {
+                    @if(wish.IsCompleted == false)
+                    {
+                        @wish.Name @wish.Amount
+                    }
+                }
+
+            </div>
+
+    </div>
     
     <div class="w-75">
         <div class="card bg-success">

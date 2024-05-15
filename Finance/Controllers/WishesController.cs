@@ -49,7 +49,7 @@ namespace Finance.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Status,CreationDate,IsCompleted")] Wish wish)
+        public async Task<IActionResult> Create([Bind("Id,Name,Status,Amount,IsCompleted")] Wish wish)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +81,7 @@ namespace Finance.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status,CreationDate,IsCompleted")] Wish wish)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status,Amount,IsCompleted")] Wish wish)
         {
             if (id != wish.Id)
             {
