@@ -2,9 +2,11 @@
 
 namespace Finance.ViewModels
 {
-    public class FinancialDashboardViewModel
-    {
-        public IEnumerable<FinancialGoal> FinancialGoals { get; set; }
-        public IEnumerable<Wish> Wishes { get; set; }
-    }
+	public class FinancialDashboardViewModel
+	{
+		public List<FinancialGoal> FinancialGoals { get; set; }
+		public List<Wish> Wishes { get; set; }
+		public List<Transaction> Transactions { get; set; }
+		public decimal TotalExpenses { get; set; }
+	}
 }

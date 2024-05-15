@@ -1,8 +1,212 @@
-﻿@{
+﻿@model Finance.ViewModels.FinancialDashboardViewModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid p-0 row">
+    <div class="w-75 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="card-title">Despesas</h5>
+                <span class="material-symbols-outlined">
+                    finance_mode
+                </span>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Value</th>
+                        <th>Day</th>
+                        <th>Pago</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var transaction in Model.Transactions)
+                    {
+                        <tr>
+                            <td>@transaction.Description</td>
+                            <td>@transaction.Value</td>
+                            <td>@transaction.Day</td>
+                            <td>
+                                @{
+                                    if (transaction.IsPaidThisMonth)
+                                    {
+                                        <span class="material-symbols-outlined">
+                                            check
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @:Não
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @if (!transaction.IsPaidThisMonth)
+                                {
+                                    <form asp-action="PayTransaction" method="post">
+                                        <input type="hidden" name="id" value="@transaction.Id" />
+                                        <button type="submit" class="btn btn-success">Pagar</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+
+                    @foreach (var goal in Model.FinancialGoals)
+                    {
+                        if (goal.Status == "Pagando")
+                        {
+                            <tr>
+                                <td>@goal.Name</td>
+                                <td>@goal.InstallmentValue</td>
+                                <td>@goal.CreatedOn.ToString("dd/MM")</td>
+                                <td>
+                                    @{
+                                        if (goal.IsPaidThisMonth)
+                                        {
+                                            <span class="material-symbols-outlined">
+                                                check
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            @:Não
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @if (!goal.IsPaidThisMonth)
+                                    {
+                                        <form asp-action="PayInstallment" method="post">
+                                            <input type="hidden" name="id" value="@goal.Id" />
+                                            <button type="submit" class="btn btn-success">
+                                                Pagar
+                                                <span class="material-symbols-outlined">
+                                                    savings
+                                                </span>
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="w-25">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between ">
+                <h5 class="card-title">Total de Despesas</h5>
+                <span class="material-symbols-outlined">
+                    attach_money
+                </span>
+            </div>
+            <div class="card-body">
+                <h3>@Model.TotalExpenses.ToString("C")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="w-75">
+        <div class="card bg-success">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="card-title">Contas pagando</h5>
+                <span class="material-symbols-outlined">
+                    paid
+                </span>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:20%;">Name</th>
+                        <th style="width:25%">Termino Previsto</th>
+                        <th class="d-none d-md-table-cell" style="width:25%">Parcelas</th>
+                        <th>Description</th>
+                        <th>Pago</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var goal in Model.FinancialGoals)
+                    {
+                        if (goal.Status == "Pagando")
+                        {
+                            <tr>
+                                <td>@goal.Name</td>
+                                <td>@goal.EstimatedCompletion?.ToString("dd/MM")</td>
+                                <td class="d-none d-md-table-cell">@goal.ParcelaAtual/@goal.Parcelas</td>
+                                <td>@goal.Description</td>
+                                <td>
+                                    @{
+                                        if (goal.IsPaidThisMonth)
+                                        {
+                                            <span class="material-symbols-outlined">
+                                                check
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            @:Não
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @if (!goal.IsPaidThisMonth)
+                                    {
+                                        <form asp-action="PayInstallment" method="post">
+                                            <input type="hidden" name="id" value="@goal.Id" />
+                                            <button type="submit" class="btn btn-success">
+                                                Pagar
+                                                <span class="material-symbols-outlined">
+                                                    savings
+                                                </span>
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="w-25">
+        <div class="card bg-danger text-white">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="card-title">Contas a pagar</h5>
+                <span class="material-symbols-outlined">
+                    money_off
+                </span>
+            </div>
+            <table class="table text-white">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var goal in Model.FinancialGoals)
+                    {
+                        if (goal.Status != "Pagando")
+                        {
+                            <tr>
+                                <td>@goal.Name</td>
+                                <td>@goal.Status</td>
+                                <td>@goal.Amount</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

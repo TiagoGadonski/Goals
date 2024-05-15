@@ -11,10 +11,13 @@ namespace Finance.Models
         public DateTime CreatedOn { get; set; } // Data de criação da meta
         public DateTime? EstimatedCompletion { get; set; } // Previsão de término (opcional)
         public string Status { get; set; } // Status da meta (ex: Active, Completed, Cancelled)
-        public string Parcelas { get; set; }
-        public string ParcelaAtual { get; set; }
+        public int Parcelas { get; set; }
+        public int ParcelaAtual { get; set; }
         public bool Check { get; set; }
         public string Description { get; set; }
+        public decimal InstallmentValue { get; set; }
+        public bool IsPaidThisMonth { get; set; }
+        public DateTime? LastPaymentDate { get; set; }
         public FinancialGoal()
         {
             // Inicialização de valores padrão

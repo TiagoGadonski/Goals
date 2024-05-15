@@ -49,7 +49,7 @@ namespace Finance.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Parcelas,Description,ParcelaAtual,Check,Status, ")] FinancialGoal financialGoal)
+        public async Task<IActionResult> Create([Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Parcelas,Description,ParcelaAtual,Check,Status,InstallmentValue")] FinancialGoal financialGoal)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +81,7 @@ namespace Finance.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Description,Parcelas,ParcelaAtual,Check,Status")] FinancialGoal financialGoal)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Description,Parcelas,ParcelaAtual,Check,Status,InstallmentValue")] FinancialGoal financialGoal)
         {
             if (id != financialGoal.Id)
             {

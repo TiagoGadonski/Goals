@@ -49,6 +49,11 @@
                 <span asp-validation-for="ParcelaAtual" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="InstallmentValue" class="control-label"></label>
+                <input asp-for="InstallmentValue" class="form-control"  />
+                <span asp-validation-for="InstallmentValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
@@ -72,3 +77,11 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+    document.querySelectorAll('input[type="number"]').forEach(function (input) {
+        input.addEventListener('input', function (event) {
+            this.value = this.value.replace(',', '.');
+        });
+    });
+</script>

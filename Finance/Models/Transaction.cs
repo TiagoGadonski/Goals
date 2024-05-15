@@ -10,6 +10,8 @@ namespace Finance.Models
         public decimal Value { get; set; }
         public string Day { get; set; }
         public TransactionType Type { get; set; }
+        public bool IsPaidThisMonth { get; set; }
+        public DateTime? LastPaymentDate { get; set; }
     }
 
     public enum TransactionType
