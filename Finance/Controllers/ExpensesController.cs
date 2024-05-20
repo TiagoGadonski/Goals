@@ -1,5 +1,6 @@
 ﻿using Finance.Data;
 using Finance.Models;
+using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -35,13 +36,13 @@ namespace Finance.Controllers
                 expenses = expenses.Where(e => e.IsPaidThisMonth == isPaidThisMonth.Value);
             }
 
-            var totalExpenses = expenses.Sum(e => e.Value);
+            var totalExpenses = await expenses.SumAsync(e => (double)e.Value);
 
             var viewModel = new ExpenseIndexViewModel
             {
                 Expenses = await expenses.ToListAsync(),
-                TotalExpenses = totalExpenses,
-                Categories = new SelectList(_context.CategoryFinances, "Id", "Name"),
+                TotalExpenses = (decimal)totalExpenses,
+                Categories = new SelectList(await _context.CategoryFinances.ToListAsync(), "Id", "Name"),
                 SearchString = searchString,
                 SelectedCategoryId = categoryId,
                 IsPaidThisMonth = isPaidThisMonth
@@ -67,13 +68,13 @@ namespace Finance.Controllers
 
         public IActionResult Create()
         {
-            ViewBag.Categories = _context.CategoryFinances.ToList();
+            ViewBag.Categories = new SelectList(_context.CategoryFinances, "Id", "Name");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Value,Day,PurchaseDate,Installments,CurrentInstallment,Type,IsPaidThisMonth,LastPaymentDate,CategoryId")] Expense expense)
+        public async Task<IActionResult> Create([Bind("Description,Value,Day,PurchaseDate,Installments,CurrentInstallment,Type,CategoryId")] Expense expense)
         {
             if (ModelState.IsValid)
             {
@@ -81,9 +82,18 @@ namespace Finance.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Categories = _context.CategoryFinances.ToList();
+            else
+            {
+                // Log errors
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+            ViewBag.Categories = new SelectList(_context.CategoryFinances, "Id", "Name", expense.CategoryId);
             return View(expense);
         }
+
 
         public async Task<IActionResult> Edit(int? id)
         {
@@ -97,7 +107,7 @@ namespace Finance.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Categories = _context.CategoryFinances.ToList();
+            ViewBag.Categories = new SelectList(_context.CategoryFinances, "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -130,7 +140,7 @@ namespace Finance.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Categories = _context.CategoryFinances.ToList();
+            ViewBag.Categories = new SelectList(_context.CategoryFinances, "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -166,15 +176,5 @@ namespace Finance.Controllers
         {
             return _context.Expenses.Any(e => e.Id == id);
         }
-    }
-
-    public class ExpenseIndexViewModel
-    {
-        public IEnumerable<Expense> Expenses { get; set; }
-        public decimal TotalExpenses { get; set; }
-        public SelectList Categories { get; set; }
-        public string SearchString { get; set; }
-        public int? SelectedCategoryId { get; set; }
-        public bool? IsPaidThisMonth { get; set; }
     }
 }

@@ -1,33 +1,11 @@
-﻿@model Finance.Controllers.ExpenseIndexViewModel
+﻿@model Finance.ViewModels.HomeViewModel
 
 @{
-    ViewData["Title"] = "Expenses";
+    ViewData["Title"] = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Expenses</h1>
-
-<form asp-action="Index">
-    <p>
-        Description: <input type="text" name="searchString" value="@Model.SearchString" />
-        Category: 
-        <select name="categoryId" asp-items="Model.Categories">
-            <option value="">All</option>
-            @foreach (var category in Model.Categories)
-            {
-                <option value="@category.Value" @(category.Value == Model.SelectedCategoryId?.ToString() ? "selected" : "")>@category.Text</option>
-            }
-        </select>
-        Paid This Month: 
-        <select name="isPaidThisMonth">
-            <option value="">All</option>
-            <option value="true" @(Model.IsPaidThisMonth == true ? "selected" : "")>Yes</option>
-            <option value="false" @(Model.IsPaidThisMonth == false ? "selected" : "")>No</option>
-        </select>
-        <input type="submit" value="Filter" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Clear</a>
-    </p>
-</form>
+<h1>Home</h1>
 
 <h2>Total Expenses: @Model.TotalExpenses.ToString("C")</h2>
 
@@ -43,41 +21,31 @@
             <th>Type</th>
             <th>Category</th>
             <th>Is Paid</th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.Expenses)
-    {
-        <tr>
-            <td>@item.Description</td>
-            <td>@item.Value</td>
-            <td>@item.Day</td>
-            <td>@item.PurchaseDate?.ToString("dd/MM/yyyy")</td>
-            <td>@item.Installments</td>
-            <td>@item.CurrentInstallment</td>
-            <td>@item.Type</td>
-            <td>@item.Category?.Name</td>
-            <td>
-                @if (item.IsPaidThisMonth)
-                {
-                    <span class="material-symbols-outlined bg-success text-white rounded-circle">check</span>
-                }
-                else
-                {
-                    <form asp-action="MarkAsPaid" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <button type="submit" class="btn btn-success">Pagar</button>
-                    </form>
-                }
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-            </td>
-        </tr>
-    }
+        @foreach (var item in Model.Expenses)
+        {
+            <tr>
+                <td>@item.Description</td>
+                <td>@item.Value</td>
+                <td>@item.Day</td>
+                <td>@item.PurchaseDate?.ToString("dd/MM/yyyy")</td>
+                <td>@item.Installments</td>
+                <td>@item.CurrentInstallment</td>
+                <td>@item.Type</td>
+                <td>@item.Category?.Name</td>
+                <td>
+                    @if (item.IsPaidThisMonth)
+                    {
+                        <span class="material-symbols-outlined bg-success text-white rounded-circle">check</span>
+                    }
+                    else
+                    {
+                        <span class="material-symbols-outlined bg-danger text-white rounded-circle">close</span>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
-
-<a asp-action="Create" class="btn btn-primary">Create New</a>

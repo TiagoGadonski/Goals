@@ -7,14 +7,29 @@ namespace Finance.Models
     {
         [Key]
         public int Id { get; set; }
+
+        [Required]
+        [StringLength(100)]
         public string Description { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Value { get; set; }
-        public string Day { get; set; } // Para despesas fixas
-        public DateTime? PurchaseDate { get; set; } // Para despesas de cartão de crédito
-        public int? Installments { get; set; } // Para despesas de cartão de crédito
-        public int? CurrentInstallment { get; set; } // Para despesas de cartão de crédito
+
+        [Required]
+        public string Day { get; set; }
+
+        public DateTime? PurchaseDate { get; set; }
+
+        public int? Installments { get; set; }
+
+        public int? CurrentInstallment { get; set; }
+
+        [Required]
         public ExpenseType Type { get; set; }
+
         public bool IsPaidThisMonth { get; set; }
+
         public DateTime? LastPaymentDate { get; set; }
 
         [ForeignKey("CategoryFinance")]
@@ -29,4 +44,3 @@ namespace Finance.Models
         Temporary
     }
 }
-

@@ -2,6 +2,7 @@ using Finance.Data;
 using Finance.Models;
 using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 public class HomeController : Controller
@@ -15,46 +16,19 @@ public class HomeController : Controller
         _context = context;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         // Buscar todas as transações de despesas
-        var transactions = _context.Transactions
-            .Where(t => t.Type == TransactionType.Expense)
-            .ToList();
+        var expenses = await _context.Expenses
+            .Where(e => e.Type != ExpenseType.Temporary || e.IsPaidThisMonth)
+            .ToListAsync();
 
-        // Buscar todas as metas financeiras com status "Pagando"
-        var payingFinancialGoals = _context.FinancialGoals
-            .Where(fg => fg.Status == "Pagando")
-            .ToList();
+        var totalExpenses = expenses.Where(e => e.IsPaidThisMonth).Sum(e => (double)e.Value);
 
-        // Resetar o estado de pagamento a cada mês
-        foreach (var transaction in transactions)
+        var viewModel = new HomeViewModel
         {
-            if (transaction.LastPaymentDate.HasValue && transaction.LastPaymentDate.Value.Month != DateTime.Now.Month)
-            {
-                transaction.IsPaidThisMonth = false;
-                _context.SaveChanges();
-            }
-        }
-
-        foreach (var goal in payingFinancialGoals)
-        {
-            if (goal.LastPaymentDate.HasValue && goal.LastPaymentDate.Value.Month != DateTime.Now.Month)
-            {
-                goal.IsPaidThisMonth = false;
-                _context.SaveChanges();
-            }
-        }
-
-        // Calcular o valor total das despesas, incluindo o valor das parcelas das metas financeiras com status "Pagando"
-        var totalExpenses = transactions.Sum(t => t.Value) + payingFinancialGoals.Sum(fg => fg.InstallmentValue);
-
-        var viewModel = new FinancialDashboardViewModel
-        {
-            FinancialGoals = _context.FinancialGoals.ToList(),
-            Wishes = _context.Wish.ToList(),
-            Transactions = transactions,
-            TotalExpenses = totalExpenses
+            Expenses = expenses,
+            TotalExpenses = (decimal)totalExpenses
         };
 
         return View(viewModel);
