@@ -17,7 +17,7 @@ namespace Finance.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var transactions = await _context.Transactions.ToListAsync();
+            var transactions = await _context.Transactions.Include(t => t.Category).ToListAsync();
             var incomes = transactions.Where(t => t.Type == TransactionType.Income).ToList();
             var expenses = transactions.Where(t => t.Type == TransactionType.Expense).ToList();
 
@@ -40,6 +40,7 @@ namespace Finance.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View(transaction);
         }
 
@@ -56,13 +57,14 @@ namespace Finance.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View(transaction);
         }
 
         // POST: Transactions/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Value,Day,Type")] Transaction transaction)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Value,Day,Type,CategoryId")] Transaction transaction)
         {
             if (id != transaction.Id)
             {
@@ -89,6 +91,7 @@ namespace Finance.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View(transaction);
         }
 
@@ -101,6 +104,7 @@ namespace Finance.Controllers
             }
 
             var transaction = await _context.Transactions
+                .Include(t => t.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (transaction == null)
             {
@@ -141,7 +145,8 @@ namespace Finance.Controllers
                         Description = financialGoal.Name,
                         Value = financialGoal.Amount,
                         Day = DateTime.Now.ToString("yyyy-MM-dd"),
-                        Type = TransactionType.Expense
+                        Type = TransactionType.Expense,
+                        CategoryId = financialGoal.CategoryId
                     };
 
                     _context.Transactions.Add(expense);
@@ -151,6 +156,7 @@ namespace Finance.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View(financialGoal);
         }
     }

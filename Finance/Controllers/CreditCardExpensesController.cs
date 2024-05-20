@@ -5,60 +5,45 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Controllers
 {
-    public class WishesController : Controller
+    public class CreditCardExpensesController : Controller
     {
         private readonly FinanceContext _context;
 
-        public WishesController(FinanceContext context)
+        public CreditCardExpensesController(FinanceContext context)
         {
             _context = context;
         }
 
-        // GET: Wishes
+        // GET: CreditCardExpenses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Wish.ToListAsync());
+            var expenses = _context.CreditCardExpenses.Include(e => e.Category).ToListAsync();
+            return View(await expenses);
         }
 
-        // GET: Wishes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var wish = await _context.Wish
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (wish == null)
-            {
-                return NotFound();
-            }
-
-            return View(wish);
-        }
-
-        // GET: Wishes/Create
+        // GET: CreditCardExpenses/Create
         public IActionResult Create()
         {
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View();
         }
 
-        // POST: Wishes/Create
+        // POST: CreditCardExpenses/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Status,Amount,IsCompleted")] Wish wish)
+        public async Task<IActionResult> Create([Bind("Id,Description,Value,Installments,CurrentInstallment,PurchaseDate,IsPaid,CategoryId")] CreditCardExpense expense)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(wish);
+                _context.Add(expense);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(wish);
+            ViewBag.Categories = _context.CategoryFinances.ToList();
+            return View(expense);
         }
 
-        // GET: Wishes/Edit/5
+        // GET: CreditCardExpenses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -66,20 +51,21 @@ namespace Finance.Controllers
                 return NotFound();
             }
 
-            var wish = await _context.Wish.FindAsync(id);
-            if (wish == null)
+            var expense = await _context.CreditCardExpenses.FindAsync(id);
+            if (expense == null)
             {
                 return NotFound();
             }
-            return View(wish);
+            ViewBag.Categories = _context.CategoryFinances.ToList();
+            return View(expense);
         }
 
-        // POST: Wishes/Edit/5
+        // POST: CreditCardExpenses/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status,Amount,IsCompleted")] Wish wish)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Value,Installments,CurrentInstallment,PurchaseDate,IsPaid,CategoryId")] CreditCardExpense expense)
         {
-            if (id != wish.Id)
+            if (id != expense.Id)
             {
                 return NotFound();
             }
@@ -88,12 +74,12 @@ namespace Finance.Controllers
             {
                 try
                 {
-                    _context.Update(wish);
+                    _context.Update(expense);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!WishExists(wish.Id))
+                    if (!CreditCardExpenseExists(expense.Id))
                     {
                         return NotFound();
                     }
@@ -104,10 +90,11 @@ namespace Finance.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(wish);
+            ViewBag.Categories = _context.CategoryFinances.ToList();
+            return View(expense);
         }
 
-        // GET: Wishes/Delete/5
+        // GET: CreditCardExpenses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -115,34 +102,35 @@ namespace Finance.Controllers
                 return NotFound();
             }
 
-            var wish = await _context.Wish
+            var expense = await _context.CreditCardExpenses
+                .Include(e => e.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (wish == null)
+            if (expense == null)
             {
                 return NotFound();
             }
 
-            return View(wish);
+            return View(expense);
         }
 
-        // POST: Wishes/Delete/5
+        // POST: CreditCardExpenses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var wish = await _context.Wish.FindAsync(id);
-            if (wish != null)
+            var expense = await _context.CreditCardExpenses.FindAsync(id);
+            if (expense != null)
             {
-                _context.Wish.Remove(wish);
+                _context.CreditCardExpenses.Remove(expense);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool WishExists(int id)
+        private bool CreditCardExpenseExists(int id)
         {
-            return _context.Wish.Any(e => e.Id == id);
+            return _context.CreditCardExpenses.Any(e => e.Id == id);
         }
     }
 }

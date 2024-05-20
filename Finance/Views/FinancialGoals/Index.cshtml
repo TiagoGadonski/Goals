@@ -85,3 +85,116 @@
         }
     </tbody>
 </table>
+
+
+<div class="w-75">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <div class="d-flex gap-2">
+                <h5 class="card-title">Contas pagando</h5>
+                <span class="material-symbols-outlined">
+                    paid
+                </span>
+            </div>
+            <a class="nav-link" href="@Url.Action("Create", "FinancialGoals")">
+                <span class="material-symbols-outlined">
+                    add
+                </span>
+            </a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:20%;">Name</th>
+                    <th style="width:25%">Termino Previsto</th>
+                    <th class="d-none d-md-table-cell" style="width:25%">Parcelas</th>
+                    <th>Description</th>
+                    <th>Pago</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var goal in Model)
+                {
+                    if (goal.Status == "Pagando")
+                    {
+                        <tr>
+                            <td>@goal.Name</td>
+                            <td>@goal.EstimatedCompletion?.ToString("dd/MM")</td>
+                            <td class="d-none d-md-table-cell">@goal.ParcelaAtual/@goal.Parcelas</td>
+                            <td>@goal.Description</td>
+                            <td>
+                                @{
+                                    if (goal.IsPaidThisMonth)
+                                    {
+                                        <span class="material-symbols-outlined">
+                                            check
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @:Não
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @if (!goal.IsPaidThisMonth)
+                                {
+                                    <form asp-action="PayInstallment" method="post">
+                                        <input type="hidden" name="id" value="@goal.Id" />
+                                        <button type="submit" class="btn btn-success">
+                                            Pagar
+                                            <span class="material-symbols-outlined">
+                                                savings
+                                            </span>
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="w-25">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <div class="d-flex gap-2">
+                <h5 class="card-title">Contas a pagar</h5>
+                <span class="material-symbols-outlined">
+                    money_off
+                </span>
+            </div>
+            <a class="nav-link" href="@Url.Action("Create", "FinancialGoals")">
+                <span class="material-symbols-outlined">
+                    add
+                </span>
+            </a>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var goal in Model)
+                {
+                    if (goal.Status != "Pagando")
+                    {
+                        <tr>
+                            <td>@goal.Name</td>
+                            <td>@goal.Status</td>
+                            <td>@goal.Amount</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

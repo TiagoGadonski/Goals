@@ -3,6 +3,7 @@ using System;
 using Finance.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Finance.Migrations
 {
     [DbContext(typeof(FinanceContext))]
-    partial class FinanceContextModelSnapshot : ModelSnapshot
+    [Migration("20240520132704_CreditCardCorrection")]
+    partial class CreditCardCorrection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -45,13 +48,6 @@ namespace Finance.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CategoryFinances");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Uncategorized"
-                        });
                 });
 
             modelBuilder.Entity("Finance.Models.Column", b =>
@@ -76,9 +72,7 @@ namespace Finance.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("CurrentInstallment")
                         .HasColumnType("INTEGER");
@@ -119,9 +113,7 @@ namespace Finance.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("Check")
                         .HasColumnType("INTEGER");
@@ -217,9 +209,7 @@ namespace Finance.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Day")
                         .IsRequired()

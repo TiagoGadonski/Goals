@@ -2,23 +2,27 @@
 using Finance.Models;
 using Finance.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Controllers
 {
-    public class Goals : Controller
+    public class GoalsController : Controller
     {
         private readonly FinanceContext _context;
 
-        public Goals(FinanceContext context)
+        public GoalsController(FinanceContext context)
         {
             _context = context;
         }
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
             var viewModel = new FinancialDashboardViewModel
             {
-                FinancialGoals = _context.FinancialGoal.ToList(),
-                Wishes = _context.Wish.ToList()
+                FinancialGoals = await _context.FinancialGoal.Include(f => f.Category).ToListAsync(),
+                Transactions = await _context.Transactions.Include(t => t.Category).ToListAsync(),
+                Wishes = await _context.Wish.ToListAsync(),
+                CreditCardExpenses = await _context.CreditCardExpenses.Include(c => c.Category).ToListAsync()
             };
 
             return View(viewModel);

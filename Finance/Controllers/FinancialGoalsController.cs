@@ -17,7 +17,8 @@ namespace Finance.Controllers
         // GET: FinancialGoals
         public async Task<IActionResult> Index()
         {
-            return View(await _context.FinancialGoal.ToListAsync());
+            var financialGoals = _context.FinancialGoal.Include(f => f.Category).ToListAsync();
+            return View(await financialGoals);
         }
 
         // GET: FinancialGoals/Details/5
@@ -29,6 +30,7 @@ namespace Finance.Controllers
             }
 
             var financialGoal = await _context.FinancialGoal
+                .Include(f => f.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (financialGoal == null)
             {
@@ -41,15 +43,14 @@ namespace Finance.Controllers
         // GET: FinancialGoals/Create
         public IActionResult Create()
         {
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View();
         }
 
         // POST: FinancialGoals/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Parcelas,Description,ParcelaAtual,Check,Status,InstallmentValue")] FinancialGoal financialGoal)
+        public async Task<IActionResult> Create([Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Parcelas,Description,ParcelaAtual,Check,Status,InstallmentValue,CategoryId")] FinancialGoal financialGoal)
         {
             if (ModelState.IsValid)
             {
@@ -57,6 +58,7 @@ namespace Finance.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View(financialGoal);
         }
 
@@ -73,15 +75,14 @@ namespace Finance.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View(financialGoal);
         }
 
         // POST: FinancialGoals/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Description,Parcelas,ParcelaAtual,Check,Status,InstallmentValue")] FinancialGoal financialGoal)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,Name,CreatedOn,EstimatedCompletion,Description,Parcelas,ParcelaAtual,Check,Status,InstallmentValue,CategoryId")] FinancialGoal financialGoal)
         {
             if (id != financialGoal.Id)
             {
@@ -108,6 +109,7 @@ namespace Finance.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categories = _context.CategoryFinances.ToList();
             return View(financialGoal);
         }
 
@@ -120,6 +122,7 @@ namespace Finance.Controllers
             }
 
             var financialGoal = await _context.FinancialGoal
+                .Include(f => f.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (financialGoal == null)
             {

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Finance.Models
 {
@@ -18,6 +19,9 @@ namespace Finance.Models
         public decimal InstallmentValue { get; set; }
         public bool IsPaidThisMonth { get; set; }
         public DateTime? LastPaymentDate { get; set; }
+        [ForeignKey("CategoryFinance")]
+        public int CategoryId { get; set; }
+        public CategoryFinance Category { get; set; }
         public FinancialGoal()
         {
             // Inicialização de valores padrão
